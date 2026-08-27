@@ -85,6 +85,9 @@ TELEGRAM_CHAT_ID=-1001234567890
 SCAN_INTERVAL_SECONDS=60
 SUPPORTED_CHAINS=solana,bsc,ton
 MAX_ALLOWED_RISK_SCORE=65
+
+# Automatic Database Retention (Days to keep data)
+DATA_RETENTION_DAYS=7
 ```
 
 > **Note**: If you leave `TELEGRAM_BOT_TOKEN` empty, the scanner will still run normally and output signals directly to the console and SQLite database.
