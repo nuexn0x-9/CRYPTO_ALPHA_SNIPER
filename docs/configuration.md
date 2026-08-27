@@ -39,7 +39,13 @@ All settings in **CRYPTO_ALPHA_SNIPER** are loaded and validated using `pydantic
 | `ALPHA_SIGNAL_SCORE` | int | `70` | Minimum score for Alpha Signal tier. |
 | `MAX_ALLOWED_RISK_SCORE` | int | `65` | Maximum allowable risk score (0-100) before auto-rejection. |
 
-### 6. Logging
+### 6. Database Retention & Auto-Cleanup
+| Variable | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `DATA_RETENTION_DAYS` | int | `7` | Number of days to retain historical records before automated purging. |
+| `AUTO_CLEANUP_ENABLED` | bool | `true` | Enables periodic automated cleanup of expired records. |
+
+### 7. Logging
 | Variable | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `LOG_LEVEL` | string | `INFO` | Logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`). |

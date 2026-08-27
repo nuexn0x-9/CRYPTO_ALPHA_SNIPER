@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - **Asynchronous Pipeline**: Built on Python `asyncio` and `httpx.AsyncClient` with semaphore-controlled concurrency.
 - **Production Database**: Async SQLite database using SQLAlchemy 2.0 ORM with WAL (Write-Ahead Logging) mode and indexed tables (`tokens`, `market_data`, `signals`, `tracking`).
+- **Automated Data Retention**: Autonomous periodic purging (`src/database/cleanup.py`) of expired tokens and cascaded historical records to maintain database efficiency.
 - **Security & Risk Engine**: Automated verification of Solana tokens via RugCheck API, checking Mint Authority, Freeze Authority, LP Burn/Lock, and Top Holder Concentration.
 - **Structured Scoring**: Multi-factor momentum scorer evaluating token age, Volume Per Minute (VPM), Buy/Sell transaction ratios, liquidity depth, and social presence.
 - **Autonomous ROI/PNL Tracker**: Background worker updating price and market cap metrics over time to benchmark signal profitability.

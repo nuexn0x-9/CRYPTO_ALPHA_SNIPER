@@ -80,6 +80,10 @@ async def migrate_legacy_data(
                 res = await session.execute(select(Token.address, Token.id))
                 addr_to_id = dict(res.all())
 
+                # Query existing tracking token_ids to prevent unique constraint violation
+                track_res = await session.execute(select(Tracking.token_id))
+                existing_tracking_ids = set(track_res.scalars().all())
+
                 migrated_signals = 0
                 for item in candidates:
                     addr = item.get("token_address")
@@ -132,17 +136,19 @@ async def migrate_legacy_data(
                     )
                     session.add(signal)
 
-                    # Create Tracking record
-                    tracking = Tracking(
-                        token_id=token_id,
-                        entry_market_cap=float(item.get("mcap", 0.0) or 0.0),
-                        current_market_cap=float(item.get("current_mcap") or 0.0) if item.get("current_mcap") else None,
-                        roi_percent=float(item.get("return_percent") or 0.0) if item.get("return_percent") is not None else None,
-                        checked=bool(item.get("checked", False)),
-                        created_at=found_dt,
-                        updated_at=datetime.now(timezone.utc),
-                    )
-                    session.add(tracking)
+                    # Create Tracking record only if token not already tracked
+                    if token_id not in existing_tracking_ids:
+                        tracking = Tracking(
+                            token_id=token_id,
+                            entry_market_cap=float(item.get("mcap", 0.0) or 0.0),
+                            current_market_cap=float(item.get("current_mcap") or 0.0) if item.get("current_mcap") else None,
+                            roi_percent=float(item.get("return_percent") or 0.0) if item.get("return_percent") is not None else None,
+                            checked=bool(item.get("checked", False)),
+                            created_at=found_dt,
+                            updated_at=datetime.now(timezone.utc),
+                        )
+                        session.add(tracking)
+                        existing_tracking_ids.add(token_id)
                     migrated_signals += 1
 
                     if migrated_signals % batch_size == 0:

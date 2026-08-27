@@ -1,6 +1,7 @@
 """Unit tests for legacy JSON data migration."""
 
 import json
+import uuid
 
 import pytest
 from sqlalchemy import select
@@ -13,19 +14,25 @@ from src.database.sqlite import get_db_session
 @pytest.mark.asyncio
 async def test_legacy_migration_idempotent(tmp_path):
     """Verifies that migration handles legacy format, avoids duplicates, and populates DB."""
+    uid = uuid.uuid4().hex[:8]
+    addr_a = f"AddrA_{uid}"
+    addr_b = f"AddrB_{uid}"
+    addr_c = f"0xAddrC_{uid}"
+    addr_d = f"AddrD_New_{uid}"
+
     # Create temporary mock JSON files
     mock_processed = tmp_path / "mock_processed.json"
     mock_candidates = tmp_path / "mock_candidates.json"
 
     mock_processed.write_text(
-        json.dumps(["AddrA", "AddrB", "0xAddrC"]),
+        json.dumps([addr_a, addr_b, addr_c]),
         encoding="utf-8"
     )
 
     mock_candidates.write_text(
         json.dumps([
             {
-                "token_address": "AddrA",
+                "token_address": addr_a,
                 "chain": "solana",
                 "score": 80,
                 "age": 5,
@@ -36,7 +43,7 @@ async def test_legacy_migration_idempotent(tmp_path):
                 "checked": False,
             },
             {
-                "token_address": "AddrD_New",
+                "token_address": addr_d,
                 "chain": "solana",
                 "score": 60,
                 "age": 10,
@@ -61,10 +68,10 @@ async def test_legacy_migration_idempotent(tmp_path):
     async with get_db_session() as session:
         tokens = (await session.execute(select(Token))).scalars().all()
         token_addrs = {t.address for t in tokens}
-        assert "AddrA" in token_addrs
-        assert "AddrB" in token_addrs
-        assert "0xAddrC" in token_addrs
-        assert "AddrD_New" in token_addrs
+        assert addr_a in token_addrs
+        assert addr_b in token_addrs
+        assert addr_c in token_addrs
+        assert addr_d in token_addrs
 
         # Verify Signal and Tracking records
         signals = (await session.execute(select(Signal))).scalars().all()

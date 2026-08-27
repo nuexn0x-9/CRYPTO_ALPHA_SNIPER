@@ -9,6 +9,7 @@ from sqlalchemy import select
 
 from src.collectors.dexscreener import DexScreenerClient
 from src.config.settings import get_settings
+from src.database.cleanup import purge_expired_records
 from src.database.models import Token, Tracking
 from src.database.sqlite import get_db_session
 
@@ -20,6 +21,7 @@ class PerformanceTracker:
         self.settings = get_settings()
         self.dexscreener = dexscreener_client or DexScreenerClient()
         self._running = False
+        self._last_cleanup_at: Optional[datetime] = None
 
     async def update_pending_candidates(self) -> int:
         """
@@ -77,9 +79,18 @@ class PerformanceTracker:
 
         while self._running:
             try:
+                # 1. Update candidate market caps & ROI
                 updated = await self.update_pending_candidates()
                 if updated > 0:
                     logger.info(f"[TRACKER] Completed cycle. Updated {updated} tokens.")
+
+                # 2. Automated Retention Cleanup (runs every 6 hours if enabled)
+                if self.settings.AUTO_CLEANUP_ENABLED:
+                    now = datetime.now(timezone.utc)
+                    if self._last_cleanup_at is None or (now - self._last_cleanup_at).total_seconds() > 21600:
+                        await purge_expired_records(self.settings.DATA_RETENTION_DAYS)
+                        self._last_cleanup_at = now
+
             except asyncio.CancelledError:
                 logger.info("Tracker worker task cancelled.")
                 break

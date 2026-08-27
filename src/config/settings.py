@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     TRACKER_INTERVAL_SECONDS: int = Field(default=120, ge=10)
     TRACKER_MAX_BATCH_SIZE: int = Field(default=25, ge=1, le=100)
 
+    # Database Retention & Auto-Cleanup Settings
+    DATA_RETENTION_DAYS: int = Field(default=7, ge=1, le=365, description="Days to retain historical records before auto-cleanup")
+    AUTO_CLEANUP_ENABLED: bool = Field(default=True, description="Enable automatic periodic purging of old tokens")
+
     # Logging Settings
     LOG_LEVEL: str = Field(default="INFO")
     LOG_FILE_PATH: str = Field(default="logs/crypto_alpha_sniper.log")
