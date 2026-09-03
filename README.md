@@ -14,6 +14,12 @@
 
 [Documentation](docs/) • [Getting Started](docs/getting-started.md) • [Architecture](docs/architecture.md) • [Docker Guide](docs/docker-guide.md) • [Contributing](docs/contributing.md)
 
+<br/>
+
+<p align="center">
+  <img src="docs/images/inforun.png" alt="CRYPTO_ALPHA_SNIPER Workflow Infographic" width="100%" />
+</p>
+
 </div>
 
 ---

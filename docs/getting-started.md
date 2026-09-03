@@ -4,26 +4,9 @@ This tutorial guides you through setting up and running **CRYPTO_ALPHA_SNIPER** 
 
 ---
 
-## 📋 End-to-End Workflow
-
-```
-Clone Repository
-      │
-      ▼
-Create Virtual Environment & Install Dependencies
-      │
-      ▼
-Configure Environment (.env)
-      │
-      ▼
-Initialize Database (SQLite WAL)
-      │
-      ▼
-Run Scanner Engine
-      │
-      ▼
-Receive Real-Time Alpha Signals on Telegram
-```
+<p align="center">
+  <img src="images/inforun.png" alt="CRYPTO_ALPHA_SNIPER Workflow Infographic" width="100%" />
+</p>
 
 ---
 
